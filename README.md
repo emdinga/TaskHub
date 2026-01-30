@@ -61,3 +61,22 @@ Is to create an application that will allow users to do the following:
 - Debugging with ephemeral pods
 - Immutable container philosophy
 
+### STAGE 3: External Access & Ingress (On-Prem Kubernetes)
+**Goal:** Expose the TaskHub API externally in an on-prem Kubernetes environment using an Ingress Controller, and understand how HTTP traffic flows from outside the cluster to application pods.
+**Achievements**
+- Created an NGINX Ingress resource for the TaskHub API
+- Configured host-based routing using:
+  - api.taskhub.local
+- Routed external HTTP traffic to the backend via:
+  - Ingress → ClusterIP Service → Pod
+- Verified Ingress creation and binding to the NGINX Ingress Controller
+- Exposed the application without using NodePort or cloud load balancers
+
+**Key Kubernetes Concepts Practiced**
+- Ingress vs Service responsibilities
+- L7 (HTTP) routing in Kubernetes
+- On-prem traffic exposure patterns
+- NGINX Ingress Controller behavior
+- Host-based routing and DNS concepts
+- Traffic flow:
+  - Client → Ingress Controller → Service → Pod
