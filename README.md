@@ -80,3 +80,27 @@ Is to create an application that will allow users to do the following:
 - Host-based routing and DNS concepts
 - Traffic flow:
   - Client → Ingress Controller → Service → Pod
+
+### STAGE 4: Configuration Management & Application Validation
+**Goal**: Externalize application configuration, securely manage secrets, and validate that the TaskHub API runs correctly in Kubernetes before introducing stateful components such as databases and caches. 
+
+**What Was Implemented**
+**Configuration Management**
+Created a ConfigMap to store non-sensitive application settings:
+  - Application name
+  - Runtime environment
+Created a Secret to store sensitive data:
+  - Authentication token
+Injected both ConfigMap and Secret values into the API container using environment variables
+
+**Deployment Update**
+- Updated the taskhub-api Deployment to:
+- Consume configuration from ConfigMaps
+- Consume sensitive values from Secrets
+- Run without hardcoded values inside the container image
+
+**Kubernetes Best Practices Applied**
+- Separation of config from application code
+- Immutable container image pattern
+- Secure handling of secrets
+
