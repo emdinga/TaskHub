@@ -82,25 +82,40 @@ Is to create an application that will allow users to do the following:
   - Client → Ingress Controller → Service → Pod
 
 ### STAGE 4: Configuration Management & Application Validation
-**Goal**: Externalize application configuration, securely manage secrets, and validate that the TaskHub API runs correctly in Kubernetes before introducing stateful components such as databases and caches. 
+**Goal**:Externalize application configuration, securely manage sensitive data, and validate that the TaskHub API runs correctly in Kubernetes before introducing performance and reliability enhancements such as caching and health probes. This stage focuses on making the application configuration-ready and state-aware, rather than feature-complete.
 
-**What Was Implemented**
+# What Was Implemented
 **Configuration Management**
-Created a ConfigMap to store non-sensitive application settings:
-  - Application name
-  - Runtime environment
-Created a Secret to store sensitive data:
-  - Authentication token
-Injected both ConfigMap and Secret values into the API container using environment variables
-
-**Deployment Update**
+- Created a ConfigMap to store non-sensitive application configuration:
+    - Application name
+    - Runtime environment
+- Created Secrets to securely store sensitive values:
+    - Authentication token
+    - Database connection details
+    -Injected configuration and secrets into the API container using environment variables
+**Deployment Updates**
 - Updated the taskhub-api Deployment to:
-- Consume configuration from ConfigMaps
-- Consume sensitive values from Secrets
-- Run without hardcoded values inside the container image
+    - Consume configuration from ConfigMaps
+    - Consume sensitive values from Secrets
+    - Run without any hardcoded configuration inside the container image
+    - Ensured configuration changes can be applied without rebuilding Docker images
+**Application Validation with Stateful Database**
+- Deployed PostgreSQL as a StatefulSet with persistent storage
+- Provisioned storage using PersistentVolumeClaims backed by on-prem hostPath
+- Exposed PostgreSQL internally via a ClusterIP Service
+- Connected the TaskHub API to PostgreSQL using:
+- Kubernetes DNS (postgres.taskhub.svc.cluster.local)
+- Secrets for credentials
+- Validated end-to-end data persistence:
+    - Created tasks via the API
+    - Retrieved tasks from the database
+    - Confirmed data survives pod restarts
 
 **Kubernetes Best Practices Applied**
-- Separation of config from application code
+- Separation of code and configuration
+- Secure secret management (no secrets in source code or images)
 - Immutable container image pattern
-- Secure handling of secrets
+- Stateful workload management using StatefulSets
+- Persistent storage handling in an on-prem environment
+- Internal service discovery using Kubernetes DNS
 
