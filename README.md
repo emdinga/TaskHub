@@ -84,7 +84,7 @@ Is to create an application that will allow users to do the following:
 ### STAGE 4: Configuration Management & Application Validation
 **Goal**:Externalize application configuration, securely manage sensitive data, and validate that the TaskHub API runs correctly in Kubernetes before introducing performance and reliability enhancements such as caching and health probes. This stage focuses on making the application configuration-ready and state-aware, rather than feature-complete.
 
-# What Was Implemented
+**What Was Implemented**
 **Configuration Management**
 - Created a ConfigMap to store non-sensitive application configuration:
     - Application name
@@ -93,12 +93,14 @@ Is to create an application that will allow users to do the following:
     - Authentication token
     - Database connection details
     -Injected configuration and secrets into the API container using environment variables
+
 **Deployment Updates**
 - Updated the taskhub-api Deployment to:
     - Consume configuration from ConfigMaps
     - Consume sensitive values from Secrets
     - Run without any hardcoded configuration inside the container image
     - Ensured configuration changes can be applied without rebuilding Docker images
+  
 **Application Validation with Stateful Database**
 - Deployed PostgreSQL as a StatefulSet with persistent storage
 - Provisioned storage using PersistentVolumeClaims backed by on-prem hostPath
