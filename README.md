@@ -121,3 +121,60 @@ Is to create an application that will allow users to do the following:
 - Persistent storage handling in an on-prem environment
 - Internal service discovery using Kubernetes DNS
 
+## STAGE 5: Application Health & Dependency Management
+
+**Overview**
+
+In this stage, the focus was on stabilizing the TaskHub API running in Kubernetes by correctly handling application health checks and external dependencies (PostgreSQL and Redis). The goal was to eliminate pod restarts, probe failures, and startup race conditions, resulting in a production-ready microservice.
+
+**Problem Statement**
+
+Initially, the API pods experienced:
+
+- **CrashLoopBackOff** due to database connections being initialized at import time
+- **Failing liveness/readiness probes** returning `404` errors
+- Unstable startup behavior when PostgreSQL or Redis were not yet ready
+
+**Solution Implemented**
+
+**1. Proper Health Endpoint**
+
+- Implemented a dedicated `/health` endpoint in FastAPI
+- Ensured the endpoint responds immediately without blocking on external dependencies
+
+**2. Safe Application Startup**
+
+- Moved database and Redis initialization out of import time
+- Ensured the application can start even if dependencies are temporarily unavailable
+
+**3. Kubernetes Probe Alignment**
+
+- Configured **liveness** and **readiness** probes to target the correct health endpoint
+- Prevented premature restarts and traffic routing before the app was ready
+
+**4. Container Validation**
+
+* Verified the container image directly using `kubectl run` and Python REPL
+* Confirmed registered routes and FastAPI application state inside the running container
+
+**Final State**
+
+- API pod reaches **READY 1/1** consistently
+- No CrashLoopBackOff or unexpected restarts
+- PostgreSQL and Redis run independently as stable services
+- TaskHub API behaves as a stateless, resilient microservice
+
+
+**Key Kubernetes Concepts covered**
+
+- Difference between **liveness** and **readiness** probes
+- Why external dependencies should not be initialized at import time
+- How Kubernetes reacts to probe failures
+- Debugging pods using `kubectl logs`, `kubectl exec`, and ephemeral containers
+
+**Stage 6: Dependency-Aware Readiness & Failure Simulation**
+
+* Separate `/health/live` and `/health/ready`
+* Simulate Redis/Postgres outages
+* Observe Kubernetes traffic routing and pod behavior
+
