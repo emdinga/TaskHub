@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: taskhub-config
+  namespace: taskhub
+data:
+  APP_NAME: "TaskHub API"
+  ENVIRONMENT: "on-prem"

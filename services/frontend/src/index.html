@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>TaskHub</title>
+</head>
+<body>
+  <h1>TaskHub</h1>
+
+  <h3>Login</h3>
+  <input id="username" placeholder="username">
+  <button onclick="login()">Login</button>
+
+  <h3>Create Task</h3>
+  <input id="task" placeholder="task title">
+  <button onclick="createTask()">Create</button>
+
+  <h3>Tasks</h3>
+  <button onclick="loadTasks()">Refresh</button>
+  <ul id="tasks"></ul>
+
+<script>
+let token = "";
+
+function login() {
+  fetch("/auth/login", {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({username: document.getElementById("username").value})
+  })
+  .then(res => res.json())
+  .then(data => token = data.token);
+}
+
+function createTask() {
+  fetch("/api/tasks", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": "Bearer " + token
+    },
+    body: JSON.stringify({title: document.getElementById("task").value})
+  });
+}
+
+function loadTasks() {
+  fetch("/api/tasks", {
+    headers: {"Authorization": "Bearer " + token}
+  })
+  .then(res => res.json())
+  .then(data => {
+    let list = document.getElementById("tasks");
+    list.innerHTML = "";
+    data.tasks.forEach(t => {
+      let li = document.createElement("li");
+      li.innerText = t.title + " (" + t.status + ")";
+      list.appendChild(li);
+    });
+  });
+}
+</script>
+</body>
+</html>

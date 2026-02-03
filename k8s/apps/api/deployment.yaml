@@ -1,0 +1,81 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api
+  namespace: taskhub
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: api
+  template:
+    metadata:
+      labels:
+        app: api
+    spec:
+      containers:
+        - name: api
+          image: localhost:32000/taskhub-api:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8000
+
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            timeoutSeconds: 2
+            failureThreshold: 3
+
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            timeoutSeconds: 2
+            failureThreshold: 3
+
+          env:
+            - name: APP_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: taskhub-config
+                  key: APP_NAME
+            - name: ENVIRONMENT
+              valueFrom:
+                configMapKeyRef:
+                  name: taskhub-config
+                  key: ENVIRONMENT
+            - name: AUTH_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: taskhub-secret
+                  key: AUTH_TOKEN
+            - name: DB_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: taskhub-db-secret
+                  key: DB_HOST
+            - name: DB_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: taskhub-db-secret
+                  key: DB_PORT
+            - name: DB_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: taskhub-db-secret
+                  key: DB_NAME
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: taskhub-db-secret
+                  key: DB_USER
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: taskhub-db-secret
+                  key: DB_PASSWORD
