@@ -172,3 +172,62 @@ Initially, the API pods experienced:
 - How Kubernetes reacts to probe failures
 - Debugging pods using `kubectl logs`, `kubectl exec`, and ephemeral containers
 
+### Stage 7: Monitoring with Prometheus & Grafana
+**Overview**: In this stage, we integrated Prometheus and Grafana into the TaskHub Kubernetes cluster to provide real-time monitoring, metrics visualization, and alerting capabilities. The goal is to ensure observability for the API, frontend, and dependent services (PostgreSQL, Redis) and to track application performance in production.
+
+**Components & Architecture**
+
+- Prometheus: Collects metrics from Kubernetes pods and services.
+
+- Grafana: Visualizes metrics through dashboards and provides alerting capabilities.
+
+- Kubernetes Cluster: TaskHub services (API, frontend, auth, worker) run in their dedicated namespace.
+
+- Ingress / External Access: Grafana and Prometheus dashboards are accessible externally via port-forwarding or Ingress.
+
+- Ingress / Port-forward --> Access dashboards externally
+
+**Implementation Details**
+1. Prometheus Deployment
+- Installed using Helm from the prometheus-community chart:
+    - helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+      helm repo update
+      kubectl create namespace monitoring
+      helm install prometheus prometheus-community/prometheus -n monitoring \
+      --set alertmanager.enabled=false \
+      --set pushgateway.enabled=false
+
+Configured to scrape metrics from:
+- TaskHub API
+- Frontend (if exposing metrics)
+- Kubernetes node metrics
+- Redis and PostgreSQL exporters (optional)
+
+**2. Grafana Deployment**
+Installed using Helm from the grafana chart:
+
+    helm repo add grafana https://grafana.github.io/helm-charts
+    helm repo update
+    helm install grafana grafana/grafana -n monitoring \
+    --set adminPassword=<secure_password> \
+    --set service.type=ClusterIP
+configured Prometheus as a data source.
+- Created dashboards for:
+  - API request rates, latencies, errors
+  - Task creation/consumption metrics
+  - Redis and PostgreSQL metrics
+
+**3. Accessing Dashboards**
+- Port-forwarding for local access:
+
+  kubectl port-forward -n monitoring svc/grafana 3000:80
+  kubectl port-forward -n monitoring svc/prometheus-server 9090:80
+
+- Dashboards are available at:
+  - Grafana: http://localhost:3000
+  - Prometheus: http://localhost:9090
+
+**4. Key Benefits**
+- Real-time monitoring: Track application performance, API latency, and task processing.
+- Alerting (future): Configure alerts for downtime, high error rates, or slow response times.
+- Operational visibility: Helps detect service degradation before impacting users.
