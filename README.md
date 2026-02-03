@@ -172,9 +172,3 @@ Initially, the API pods experienced:
 - How Kubernetes reacts to probe failures
 - Debugging pods using `kubectl logs`, `kubectl exec`, and ephemeral containers
 
-**Stage 6: Dependency-Aware Readiness & Failure Simulation**
-
-* Separate `/health/live` and `/health/ready`
-* Simulate Redis/Postgres outages
-* Observe Kubernetes traffic routing and pod behavior
-
