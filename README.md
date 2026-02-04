@@ -231,3 +231,6 @@ configured Prometheus as a data source.
 - Real-time monitoring: Track application performance, API latency, and task processing.
 - Alerting (future): Configure alerts for downtime, high error rates, or slow response times.
 - Operational visibility: Helps detect service degradation before impacting users.
+
+
+Architecture Daigram: https://drive.google.com/file/d/1CiFF-JM_ccvLNVT6s7sR8g_uiYlcnDR7/view?usp=sharing
